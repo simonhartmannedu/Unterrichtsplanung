@@ -226,14 +226,14 @@
       if (action === 'duplicate') { const copy = JSON.parse(JSON.stringify(data.phases[index])); copy.id = uid(); data.phases.splice(index + 1, 0, copy); }
       if (action === 'up' && index > 0) [data.phases[index - 1], data.phases[index]] = [data.phases[index], data.phases[index - 1]];
       if (action === 'down' && index < data.phases.length - 1) [data.phases[index + 1], data.phases[index]] = [data.phases[index], data.phases[index + 1]];
-      save(false); render();
+      render(); save(false);
     });
-    $('#addPhase').addEventListener('click', () => { data = collect(); data.phases.push(blankPhase()); save(false); render(); const last = $('#phases tr:last-child [data-field="name"]'); if (last) last.focus(); });
+    $('#addPhase').addEventListener('click', () => { data = collect(); data.phases.push(blankPhase()); render(); save(false); const last = $('#phases tr:last-child [data-field="name"]'); if (last) last.focus(); });
     $('#save').addEventListener('click', () => save(true));
     $('#print').addEventListener('click', () => { syncPrintValues(); save(false); window.print(); });
     $('#reset').addEventListener('click', () => { if (!confirm('Alle Eingaben auf die Vorlage zurücksetzen?')) return; data = defaults(); try { localStorage.removeItem(STORAGE_KEY); } catch {} render(); save(false); status('Formular wurde zurückgesetzt.'); });
     $('#export').addEventListener('click', () => { save(false); const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'unterrichtsplanung-daten.json'; link.click(); URL.revokeObjectURL(link.href); status('JSON-Datei wurde exportiert.'); });
-    $('#import').addEventListener('change', event => { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const imported = JSON.parse(reader.result); if (!valid(imported)) throw new Error(); imported.version = 1; imported.phases = imported.phases.map(phase => ({...blankPhase(), ...phase, id:phase.id || uid()})); data = imported; save(false); render(); status('JSON-Daten wurden importiert.'); } catch { alert('Die gewählte Datei enthält keine gültigen Unterrichtsplanungs-Daten.'); } finally { event.target.value = ''; } }; reader.readAsText(file, 'utf-8'); });
+    $('#import').addEventListener('change', event => { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const imported = JSON.parse(reader.result); if (!valid(imported)) throw new Error(); imported.version = 1; imported.phases = imported.phases.map(phase => ({...blankPhase(), ...phase, id:phase.id || uid()})); data = imported; render(); save(false); status('JSON-Daten wurden importiert.'); } catch { alert('Die gewählte Datei enthält keine gültigen Unterrichtsplanungs-Daten.'); } finally { event.target.value = ''; } }; reader.readAsText(file, 'utf-8'); });
     window.addEventListener('beforeprint', () => { resizeAll(); syncPrintValues(); });
     render();
   })();
