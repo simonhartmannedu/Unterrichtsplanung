@@ -5,64 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Unterrichtsplanung</title>
   <style>
-    :root { --line:#555d62; --edit:#f5f6f6; --head:#e5e8e9; --blue:#396985; --ink:#1e2529; --canvas:#eef0f1; --soft-blue:#edf4f7; }
+    :root { --line:#c7d0d5; --edit:#f8fafb; --head:#edf1f3; --blue:#2d617f; --blue-dark:#214b65; --ink:#1b2830; --muted:#607079; --canvas:#f2f5f6; --soft-blue:#edf5f8; --danger:#a23935; }
     * { box-sizing:border-box; }
-    body { margin:0; background:var(--canvas); color:var(--ink); font-family:Arial, "Liberation Sans", sans-serif; font-size:10.5pt; line-height:1.28; }
-    .toolbar { position:sticky; top:0; z-index:20; display:flex; flex-wrap:nowrap; gap:5px; align-items:center; overflow-x:auto; padding:7px max(12px, calc((100% - 1120px)/2)); background:#fff; border-bottom:1px solid #cbd1d4; box-shadow:0 1px 4px #00000012; white-space:nowrap; }
-    button, .file-button { appearance:none; flex:0 0 auto; border:1px solid #aeb8bd; border-radius:3px; background:#fff; color:#263238; padding:4px 7px; font:inherit; font-size:8.5pt; font-weight:400; line-height:1.25; cursor:pointer; box-shadow:none; }
-    button:hover, .file-button:hover { border-color:var(--blue); color:#164b6d; background:var(--soft-blue); }
-    .primary { background:#386984; border-color:#386984; color:#fff; }
-    .primary:hover { background:#2c5971; color:#fff; }
+    body { margin:0; background:var(--canvas); color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size:10.5pt; line-height:1.4; }
+    .toolbar { position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:7px; align-items:center; padding:9px max(16px, calc((100% - 1220px)/2)); background:#fff; border-bottom:1px solid #d8e0e3; box-shadow:0 2px 10px #1630430c; }
+    .toolbar-brand { display:flex; align-items:center; gap:8px; margin-right:8px; padding-right:13px; border-right:1px solid #dce3e6; color:#34434b; font-size:9pt; font-weight:650; letter-spacing:.015em; white-space:nowrap; }
+    .toolbar-brand::before { content:""; width:9px; height:9px; border:2px solid var(--blue); border-radius:50%; box-shadow:8px 0 0 -5px var(--blue), 0 8px 0 -5px var(--blue); }
+    .toolbar-group { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+    .toolbar-group + .toolbar-group { padding-left:8px; border-left:1px solid #e1e6e8; }
+    button, .file-button { appearance:none; flex:0 0 auto; border:1px solid #b9c5cb; border-radius:5px; background:#fff; color:#314149; padding:5px 9px; font:inherit; font-size:8.5pt; font-weight:520; line-height:1.35; cursor:pointer; box-shadow:0 1px 1px #14314308; transition:background .14s, border-color .14s, color .14s, box-shadow .14s; white-space:nowrap; }
+    button:hover, .file-button:hover { border-color:#7293a6; color:#164b6d; background:var(--soft-blue); box-shadow:0 1px 3px #14314312; }
+    button:focus-visible, .file-button:focus-within { outline:3px solid #b8d7e5; outline-offset:2px; }
+    .primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+    .primary:hover { background:var(--blue-dark); border-color:var(--blue-dark); color:#fff; }
     .file-button input { display:none; }
-    .status { flex:0 0 auto; min-height:1em; margin-left:auto; color:#526068; font-size:8.25pt; }
-    .document { width:calc(100% - 24px); max-width:1120px; min-height:297mm; margin:14px auto 28px; padding:12mm 10mm; background:#fff; border:1px solid #d4d9db; border-radius:2px; box-shadow:0 2px 8px #00000010; }
-    .title-line { display:flex; align-items:center; gap:8px; margin:0 0 6px; font-weight:700; color:#20282d; }
-    .title-line label { white-space:nowrap; }
+    .status { flex:1 0 130px; min-height:1em; margin-left:auto; color:var(--muted); font-size:8.25pt; text-align:right; }
+    .document { width:calc(100% - 32px); max-width:1220px; min-height:297mm; margin:18px auto 32px; padding:10mm; background:#fff; border:1px solid #dae1e4; border-radius:8px; box-shadow:0 8px 24px #15364a0d; }
+    .header { display:grid; grid-template-columns:minmax(0, 1fr) auto; gap:15px 22px; align-items:end; margin:0 0 15px; padding:0 0 14px; border-bottom:1px solid #dce4e7; }
+    .header-intro { grid-column:1 / -1; display:flex; align-items:baseline; gap:10px; }
+    .eyebrow { margin:0; color:var(--blue); font-size:8pt; font-weight:750; letter-spacing:.11em; text-transform:uppercase; }
+    .header-hint { margin:0; color:var(--muted); font-size:8.5pt; }
+    .title-line { display:flex; align-items:center; gap:9px; margin:0; font-weight:650; color:#26363e; }
+    .title-line label { white-space:nowrap; font-size:9pt; }
     .title-line .print-field { flex:1 1 auto; }
-    .learning-goals { display:flex; align-items:center; gap:8px; margin:0 0 10px; font-weight:700; }
+    .learning-goals { display:flex; align-items:center; gap:8px; margin:0; font-weight:650; }
     .learning-goals > span { flex:1 1 auto; }
+    .table-wrap { width:100%; }
     .plan-table { width:100%; border-collapse:collapse; table-layout:fixed; }
     .plan-table col:nth-child(1) { width:21%; }
     .plan-table col:nth-child(2) { width:38%; }
     .plan-table col:nth-child(3) { width:21%; }
     .plan-table col:nth-child(4) { width:20%; }
-    th, td { border:0.5pt solid var(--line); padding:3.5px 4px; overflow-wrap:anywhere; vertical-align:top; }
-    th { height:36px; background:var(--head); vertical-align:middle; text-align:center; color:#1f292e; font-family:"Times New Roman", Liberation Serif, serif; font-weight:400; }
+    th, td { border:1px solid var(--line); padding:7px 8px; overflow-wrap:anywhere; vertical-align:top; }
+    th { height:42px; background:var(--head); vertical-align:middle; text-align:left; color:#35444b; font-size:8.5pt; font-weight:700; letter-spacing:.015em; }
     td { min-width:0; }
     .phase-row td { background:#fff; }
     .phase-row td:nth-child(2) { background:#fbfbfb; }
-    input:not([type="checkbox"]):not([type="file"]), textarea { display:block; width:100%; min-width:0; margin:0; border:1px solid #c8d0d3; border-radius:2px; padding:3px 4px; background:var(--edit); color:#172026; font:inherit; line-height:1.25; box-shadow:none; }
-    input:hover, textarea:hover { border-color:#aab8be; }
-    input:focus, textarea:focus { outline:2px solid #b9d3e0; outline-offset:-1px; border-color:#6b9bb5; background:#fff; }
+    input:not([type="checkbox"]):not([type="file"]), textarea { display:block; width:100%; min-width:0; margin:0; border:1px solid #d4dde1; border-radius:4px; padding:5px 6px; background:var(--edit); color:#172026; font:inherit; line-height:1.3; box-shadow:inset 0 1px 1px #132d3a05; transition:border-color .14s, background .14s, box-shadow .14s; }
+    input:hover, textarea:hover { border-color:#acbec6; background:#fff; }
+    input:focus, textarea:focus { outline:3px solid #c3e0eb; outline-offset:0; border-color:#4d829d; background:#fff; box-shadow:none; }
     input[type="number"] { flex:0 0 52px; width:52px !important; text-align:center; }
     textarea { min-height:3.2em; resize:vertical; overflow:hidden; white-space:pre-wrap; }
-    .phase-name { font-weight:700; margin-bottom:4px !important; }
-    .field-label { display:block; margin:5px 0 2px; color:#536067; font-size:8.25pt; font-weight:400; }
-    .duration-row { display:flex; align-items:center; gap:4px; margin-top:7px; font-size:9pt; white-space:nowrap; }
+    .phase-name { font-weight:700; margin-bottom:6px !important; }
+    .field-label { display:block; margin:8px 0 3px; color:#607079; font-size:7.75pt; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .duration-row { display:flex; align-items:center; gap:5px; margin-top:9px; color:#53636b; font-size:8.5pt; white-space:nowrap; }
     .method { margin-top:4px !important; }
     .combo { min-height:1.8em; }
     .combo-wrap { position:relative; display:flex; width:100%; min-width:0; }
-    .combo-wrap input { flex:1 1 auto; width:auto; padding-right:2px; border-radius:2px 0 0 2px; }
-    .combo-toggle { flex:0 0 22px; width:22px; min-width:22px; margin:0; padding:0; border-left:0; border-radius:0 2px 2px 0; background:#edf0f1; color:transparent; font-size:0; line-height:1; transform:none; }
+    .combo-wrap input { flex:1 1 auto; width:auto; padding-right:2px; border-radius:4px 0 0 4px; }
+    .combo-toggle { flex:0 0 26px; width:26px; min-width:26px; margin:0; padding:0; border-left:0; border-radius:0 4px 4px 0; background:#eef3f5; color:transparent; font-size:0; line-height:1; transform:none; }
     .combo-toggle::after { content:""; display:inline-block; width:5px; height:5px; border:solid #5b666c; border-width:0 1.5px 1.5px 0; transform:rotate(45deg) translateY(-2px); }
     .combo-toggle:hover, .combo-wrap:focus-within .combo-toggle { border-color:#6e9cbb; background:#e0edf3; color:transparent; transform:none; }
     .combo-toggle:hover::after, .combo-wrap:focus-within .combo-toggle::after { border-color:#285b79; }
-    .combo-menu { position:absolute; z-index:10; top:calc(100% + 1px); left:0; right:0; max-height:185px; overflow-y:auto; border:1px solid #7695a9; border-radius:2px; background:#fff; box-shadow:0 3px 9px #0003; }
+    .combo-menu { position:absolute; z-index:10; top:calc(100% + 3px); left:0; right:0; max-height:210px; overflow-y:auto; border:1px solid #7695a9; border-radius:5px; background:#fff; box-shadow:0 8px 18px #183a4c2b; }
     .combo-menu[hidden] { display:none; }
     .combo-option { display:block; width:100%; border:0; border-bottom:1px solid #e1e4e6; border-radius:0; padding:5px 6px; background:#fff; color:#151515; text-align:left; font-size:9pt; white-space:normal; overflow-wrap:anywhere; }
     .combo-option:last-child { border-bottom:0; }
     .combo-option:hover, .combo-option:focus { background:#e9f2f8; color:#102f4b; outline:none; }
-    .content-area { min-height:7.2em; }
+    .content-area { min-height:8em; }
     .compact-area { min-height:3.5em; }
-    .phase-actions { display:flex; flex-wrap:wrap; gap:3px; margin-top:7px; }
-    .phase-actions button { padding:2px 5px; font-size:8pt; font-weight:400; }
-    .phase-actions button[data-action="up"], .phase-actions button[data-action="down"] { min-width:20px; padding-inline:3px; }
-    .phase-actions .delete { color:#8d2525; }
+    .phase-actions { display:flex; flex-wrap:wrap; gap:4px; margin-top:9px; padding-top:8px; border-top:1px solid #e2e8ea; }
+    .phase-actions button { padding:3px 6px; font-size:7.75pt; font-weight:600; }
+    .phase-actions button[data-action="up"], .phase-actions button[data-action="down"] { min-width:25px; padding-inline:4px; }
+    .phase-actions .delete { color:#8d2525; border-color:#dfc2c0; }
+    .phase-actions .delete:hover { color:#fff; border-color:var(--danger); background:var(--danger); }
     .print-value { display:none; white-space:pre-wrap; overflow-wrap:anywhere; min-height:1.2em; }
     .print-check { display:none; }
-    .help { margin:8px 0 0; color:#5c6469; font-size:8.5pt; }
+    .plan-meta { display:flex; align-items:center; justify-content:flex-end; gap:8px; color:var(--muted); font-size:8.5pt; white-space:nowrap; }
+    .plan-meta strong { color:#34464f; font-size:9pt; }
+    .help { margin:10px 0 0; color:#64747b; font-size:8.25pt; }
     .screen-only { display:block; }
-    @media (max-width:700px) { .document { width:100%; margin:0; padding:7mm 4mm; box-shadow:none; } .toolbar { position:static; padding:8px; } .status { width:100%; margin-left:0; } body { font-size:9.5pt; } }
+    @media (max-width:760px) { .document { width:100%; margin:0; padding:6mm 4mm; border:0; border-radius:0; box-shadow:none; } .toolbar { position:static; padding:9px; } .toolbar-brand { width:100%; margin:0; padding:0 0 7px; border:0; border-bottom:1px solid #e1e6e8; } .toolbar-group + .toolbar-group { padding-left:0; border-left:0; } .status { width:100%; margin-left:0; text-align:left; } .header { grid-template-columns:1fr; gap:10px; } .header-intro { display:block; } .header-hint { margin-top:3px; } .plan-meta { justify-content:flex-start; } .table-wrap { overflow-x:auto; padding-bottom:5px; } .plan-table { min-width:970px; } .plan-table col:nth-child(1) { width:220px; } .plan-table col:nth-child(2) { width:330px; } .plan-table col:nth-child(3) { width:220px; } .plan-table col:nth-child(4) { width:200px; } body { font-size:9.5pt; } }
     @page { size:A4 portrait; margin:8mm 9mm 9mm; }
     @media print {
       html, body { width:auto; margin:0; background:#fff; font-size:9.2pt; line-height:1.22; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -91,26 +104,35 @@
 </head>
 <body>
   <nav class="toolbar" aria-label="Werkzeugleiste">
-    <button type="button" class="primary" id="addPhase">Neue Phase hinzufügen</button>
-    <button type="button" id="save">Daten speichern</button>
-    <button type="button" id="export">JSON exportieren</button>
-    <label class="file-button">JSON importieren<input id="import" type="file" accept="application/json,.json"></label>
-    <button type="button" id="reset">Formular zurücksetzen</button>
-    <button type="button" id="print">Drucken / als PDF speichern</button>
+    <span class="toolbar-brand">Unterrichtsplanung</span>
+    <div class="toolbar-group" aria-label="Phasen bearbeiten">
+      <button type="button" class="primary" id="addPhase">+ Phase</button>
+      <button type="button" id="save">Speichern</button>
+    </div>
+    <div class="toolbar-group" aria-label="Dateiaktionen">
+      <button type="button" id="export">JSON exportieren</button>
+      <label class="file-button">JSON importieren<input id="import" type="file" accept="application/json,.json"></label>
+      <button type="button" id="print">Drucken / PDF</button>
+      <button type="button" id="reset">Zurücksetzen</button>
+    </div>
     <span class="status" id="status" aria-live="polite"></span>
   </nav>
 
   <main class="document">
     <section class="header" aria-label="Kopfbereich">
-      <div class="title-line"><label for="planningTitle">Stundenplanung:</label><span class="print-field"><input id="planningTitle" data-header="title" aria-label="Stundenplanung"><span class="print-value"></span></span></div>
-      <div class="learning-goals"><strong>LZ:</strong><span class="print-field"><input id="learningGoals" aria-label="Lernzielbereiche"><span class="print-value"></span></span></div>
+      <div class="header-intro"><p class="eyebrow">Planungsübersicht</p><p class="header-hint">Eingaben werden automatisch im Browser gesichert.</p></div>
+      <div class="title-line"><label for="planningTitle">Stundenplanung</label><span class="print-field"><input id="planningTitle" data-header="title" aria-label="Stundenplanung" placeholder="z. B. Deutsch – Informationsquellen nutzen"><span class="print-value"></span></span></div>
+      <div class="learning-goals"><strong>Lernziele</strong><span class="print-field"><input id="learningGoals" aria-label="Lernzielbereiche" placeholder="Lernzielbereiche oder Kompetenzen ergänzen"><span class="print-value"></span></span></div>
     </section>
-    <table class="plan-table" aria-label="Unterrichtsplanung">
-      <colgroup><col><col><col><col></colgroup>
-      <thead><tr><th>Unterrichtsschritt /<br>Methodik</th><th>Sach- und Verhaltensaspekt</th><th>Sozialform /<br>Handlungsmuster</th><th>Medien</th></tr></thead>
-      <tbody id="phases"></tbody>
-    </table>
-    <p class="help screen-only">Alle hellgrauen Felder sind direkt bearbeitbar. Bei Auswahlfeldern können Sie einen Vorschlag wählen oder einen eigenen Wert eingeben. Die Eingaben werden automatisch im Browser gespeichert.</p>
+    <div class="plan-meta screen-only" aria-live="polite"><span>Geplante Zeit:</span> <strong id="totalMinutes">0 Min.</strong></div>
+    <div class="table-wrap">
+      <table class="plan-table" aria-label="Unterrichtsplanung">
+        <colgroup><col><col><col><col></colgroup>
+        <thead><tr><th>Unterrichtsschritt /<br>Methodik</th><th>Sach- und Verhaltensaspekt</th><th>Sozialform /<br>Handlungsmuster</th><th>Medien</th></tr></thead>
+        <tbody id="phases"></tbody>
+      </table>
+    </div>
+    <p class="help screen-only">Alle Felder sind direkt bearbeitbar. Über die Pfeile in Auswahlfeldern stehen Vorschläge bereit; Freitext bleibt jederzeit möglich.</p>
   </main>
 
   <!-- ODT-Abgleich: Alle nachstehenden Datalists wurden gegen Vorlage-U-Planung.odt kontrolliert: Anzahl, Schreibweise, Reihenfolge und Standardwerte. -->
@@ -166,7 +188,8 @@
       return next;
     }
     function field(phase, key, className = '', list = '') {
-      const input = `<input class="${className}" data-field="${key}" ${list ? `list="${escapeHtml(list)}"` : ''} value="${escapeHtml(phase[key])}" aria-label="${escapeHtml(key)}">`;
+      const placeholders = {name:'Unterrichtsschritt', method:'Methode oder Impuls', social:'Sozialform', micro:'Mikro-Handlungsmuster', media:'Medium', differentiation:'Differenzierung'};
+      const input = `<input class="${className}" data-field="${key}" ${list ? `list="${escapeHtml(list)}"` : ''} value="${escapeHtml(phase[key])}" placeholder="${escapeHtml(placeholders[key] || '')}" aria-label="${escapeHtml(key)}">`;
       const editableCombo = list ? `<span class="combo-wrap">${input}<button type="button" class="combo-toggle screen-only" data-combo-toggle aria-label="Vorschläge für ${escapeHtml(key)} anzeigen" aria-expanded="false">▾</button><span class="combo-menu screen-only" hidden></span></span>` : input;
       return `<span class="print-field">${editableCombo}<span class="print-value"></span></span>`;
     }
@@ -179,7 +202,7 @@
           ${field(phase, 'name', 'phase-name combo', phase.nameList)}
           <label class="field-label">Methode / Impuls</label>${field(phase, 'method', 'method combo', phase.methodList)}
           <div class="duration-row"><span>T</span><span class="print-field"><input type="number" min="0" step="1" data-field="minutes" value="${escapeHtml(phase.minutes)}" aria-label="Dauer in Minuten"><span class="print-value"></span></span><span>Minuten</span></div>
-          <div class="phase-actions screen-only"><button type="button" data-action="up" title="Phase nach oben">↑</button><button type="button" data-action="down" title="Phase nach unten">↓</button><button type="button" data-action="duplicate">Duplizieren</button><button type="button" data-action="delete" class="delete">Löschen</button></div>
+          <div class="phase-actions screen-only"><button type="button" data-action="up" title="Phase nach oben" aria-label="Phase nach oben">↑</button><button type="button" data-action="down" title="Phase nach unten" aria-label="Phase nach unten">↓</button><button type="button" data-action="duplicate">Kopieren</button><button type="button" data-action="delete" class="delete">Löschen</button></div>
         </td>
         <td>${textarea(phase, 'aspect', 'content-area')}</td>
         <td>
@@ -191,11 +214,16 @@
           <label class="field-label">Differenzierung</label>${field(phase, 'differentiation', 'combo', 'list-differenzierung')}
         </td>
       </tr>`).join('');
-      resizeAll(); syncPrintValues();
+      resizeAll(); syncPrintValues(); updateTotalMinutes();
     }
     function autoResize(textarea) { textarea.style.height = 'auto'; textarea.style.height = `${textarea.scrollHeight}px`; }
     function resizeAll() { document.querySelectorAll('textarea').forEach(autoResize); }
     function syncPrintValues() { document.querySelectorAll('.print-field').forEach(wrapper => { const control = wrapper.querySelector('input, textarea'); const out = wrapper.querySelector('.print-value'); if (control && out) out.textContent = control.value; }); }
+    function updateTotalMinutes() {
+      const total = Array.from(document.querySelectorAll('[data-field="minutes"]')).reduce((sum, input) => sum + (Number(input.value) || 0), 0);
+      const out = $('#totalMinutes');
+      if (out) out.textContent = `${total} Min.`;
+    }
     function closeCombos(except = null) { document.querySelectorAll('.combo-wrap').forEach(wrap => { if (wrap !== except) { const menu = $('.combo-menu', wrap); const toggle = $('[data-combo-toggle]', wrap); if (menu) menu.hidden = true; if (toggle) toggle.setAttribute('aria-expanded', 'false'); } }); }
     function fillComboMenu(wrap, query = null) {
       const input = $('input[list]', wrap); const menu = $('.combo-menu', wrap); if (!input || !menu || !input.list) return;
@@ -207,7 +235,7 @@
     function onInput(event) {
       if (event.target.matches('textarea')) autoResize(event.target);
       const wrap = event.target.closest('.combo-wrap'); if (wrap && !$('.combo-menu', wrap).hidden) fillComboMenu(wrap);
-      syncPrintValues(); save(false);
+      syncPrintValues(); updateTotalMinutes(); save(false);
     }
     document.addEventListener('input', onInput);
     document.addEventListener('change', event => { if (event.target.matches('[data-goal], input, textarea')) { syncPrintValues(); save(false); } });
